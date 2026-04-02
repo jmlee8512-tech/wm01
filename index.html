@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stage Viewer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --border: #2a2a2a;
+    --accent: #c8f060;
+    --accent2: #60c8f0;
+    --muted: #555;
+    --text: #e8e8e8;
+    --text-dim: #888;
+    --bar-h: 52px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  #topbar {
+    height: var(--bar-h);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 16px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Stage tabs */
+  #tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .tab {
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .06em;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0d0d0d;
+    font-weight: 500;
+  }
+  .tab .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: .5;
+    flex-shrink: 0;
+  }
+
+  /* Controls */
+  #controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+
+  .btn {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .btn:active { transform: scale(.96); }
+
+  .btn.icon-btn {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .btn-prev, .btn-next {
+    border-color: var(--border);
+  }
+  .btn-prev:hover, .btn-next:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn-prev:disabled, .btn-next:disabled {
+    opacity: .25;
+    cursor: not-allowed;
+  }
+  .btn-prev:disabled:hover, .btn-next:disabled:hover {
+    border-color: var(--border);
+    color: var(--text-dim);
+  }
+
+  .btn-reload { }
+  .btn-reload:hover {
+    border-color: #f06060;
+    color: #f06060;
+  }
+
+  /* counter */
+  #counter {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: .05em;
+    min-width: 42px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  #counter span { color: var(--text); }
+
+  /* ── STAGE LABEL STRIP ── */
+  #stage-label-bar {
+    height: 28px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  #stage-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .label-line {
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border));
+  }
+  .label-line.right {
+    background: linear-gradient(270deg, transparent, var(--border));
+  }
+
+  /* ── VIEWPORT ── */
+  #viewport {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* 4:3 frame */
+  #frame-wrap {
+    position: relative;
+  }
+
+  .iframe-slot {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+    display: block;
+    border-radius: 2px;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .iframe-slot.active {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* outer decorative border */
+  #frame-border {
+    position: absolute;
+    inset: -2px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* corner accents */
+  #frame-border::before,
+  #frame-border::after {
+    content: '';
+    position: absolute;
+    width: 10px; height: 10px;
+  }
+  #frame-border::before {
+    top: -1px; left: -1px;
+    border-top: 2px solid var(--accent);
+    border-left: 2px solid var(--accent);
+  }
+  #frame-border::after {
+    bottom: -1px; right: -1px;
+    border-bottom: 2px solid var(--accent);
+    border-right: 2px solid var(--accent);
+  }
+
+  /* reload overlay flash */
+  #reload-flash {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+    border-radius: 2px;
+    transition: opacity .1s;
+  }
+  #reload-flash.flash {
+    animation: flash-anim .35s ease forwards;
+  }
+  @keyframes flash-anim {
+    0% { opacity: .3; }
+    100% { opacity: 0; }
+  }
+
+  /* Spinning reload icon */
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .spinning { animation: spin .5s linear; }
+
+  /* slide transition overlay */
+  #slide-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 15;
+    border-radius: 2px;
+  }
+  #slide-overlay.transitioning {
+    animation: slide-fade .25s ease;
+  }
+  @keyframes slide-fade {
+    0% { opacity: .7; }
+    100% { opacity: 0; }
+  }
+
+  /* ── BOTTOM BAR ── */
+  #bottombar {
+    height: 28px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .status-item {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .05em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .status-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 4px var(--accent);
+  }
+
+  /* Tooltip */
+  [data-tip] { position: relative; }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div id="tabs"></div>
+  <div class="divider"></div>
+  <div id="controls">
+    <button class="btn btn-prev" id="btn-prev" data-tip="이전 스테이지">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M7.5 2L3.5 6L7.5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      PREV
+    </button>
+    <div id="counter"><span id="cur">1</span>/<span id="tot">5</span></div>
+    <button class="btn btn-next" id="btn-next" data-tip="다음 스테이지">
+      NEXT
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M4.5 2L8.5 6L4.5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="divider"></div>
+    <button class="btn btn-reload icon-btn" id="btn-reload" data-tip="현재 스테이지 리로드">
+      <svg id="reload-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M12 7A5 5 0 1 1 9.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M9.5 1V3.5H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- STAGE LABEL -->
+<div id="stage-label-bar">
+  <div class="label-line"></div>
+  <div id="stage-name">STAGE 1</div>
+  <div class="label-line right"></div>
+</div>
+
+<!-- VIEWPORT -->
+<div id="viewport">
+  <div id="frame-border"></div>
+  <div id="frame-wrap">
+    <div id="reload-flash"></div>
+    <div id="slide-overlay"></div>
+    <!-- iframes injected here -->
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div id="bottombar">
+  <div class="status-item">
+    <div class="status-dot"></div>
+    <span>LIVE</span>
+  </div>
+  <div class="status-item" id="status-file">—</div>
+</div>
+
+<script>
+const STAGES = [
+  { label: 'STAGE 1', file: 'stage1_full_v2.html' },
+  { label: 'STAGE 2', file: 'stage2_game.html' },
+  { label: 'STAGE 3', file: 'stage3_game.html' },
+  { label: 'STAGE 4', file: 'stage4_game.html' },
+  { label: 'STAGE 5', file: 'stage5_game.html' },
+];
+
+let current = 0;
+
+// ── BUILD TABS ──
+const tabsEl = document.getElementById('tabs');
+STAGES.forEach((s, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab' + (i === 0 ? ' active' : '');
+  btn.innerHTML = `<span class="dot"></span>${s.label}`;
+  btn.addEventListener('click', () => goTo(i));
+  tabsEl.appendChild(btn);
+});
+
+// ── BUILD IFRAMES (all loaded once, hidden/shown) ──
+const frameWrap = document.getElementById('frame-wrap');
+const iframes = [];
+
+STAGES.forEach((s, i) => {
+  const iframe = document.createElement('iframe');
+  iframe.className = 'iframe-slot' + (i === 0 ? ' active' : '');
+  iframe.src = s.file;
+  iframe.setAttribute('scrolling', 'no');
+  frameWrap.appendChild(iframe);
+  iframes.push(iframe);
+});
+
+// ── RESIZE: maintain 4:3 ratio ──
+function resize() {
+  const vp = document.getElementById('viewport');
+  const vw = vp.clientWidth - 32;
+  const vh = vp.clientHeight - 24;
+
+  let w = vw;
+  let h = w * (3 / 4);
+  if (h > vh) { h = vh; w = h * (4 / 3); }
+
+  frameWrap.style.width = w + 'px';
+  frameWrap.style.height = h + 'px';
+
+  iframes.forEach(f => {
+    f.style.width = w + 'px';
+    f.style.height = h + 'px';
+  });
+}
+window.addEventListener('resize', resize);
+resize();
+
+// ── NAVIGATION ──
+function goTo(idx, reload = false) {
+  if (idx === current && !reload) return;
+
+  const overlay = document.getElementById('slide-overlay');
+  overlay.classList.remove('transitioning');
+  void overlay.offsetWidth; // reflow
+  overlay.classList.add('transitioning');
+
+  // hide old
+  iframes[current].classList.remove('active');
+  document.querySelectorAll('.tab')[current].classList.remove('active');
+
+  current = idx;
+
+  // reload if requested
+  if (reload) {
+    triggerReloadFlash();
+    iframes[current].src = STAGES[current].file;
+  }
+
+  // show new
+  iframes[current].classList.add('active');
+  document.querySelectorAll('.tab')[current].classList.add('active');
+
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById('cur').textContent = current + 1;
+  document.getElementById('stage-name').textContent = STAGES[current].label;
+  document.getElementById('status-file').textContent = STAGES[current].file;
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === STAGES.length - 1;
+}
+
+function triggerReloadFlash() {
+  const flash = document.getElementById('reload-flash');
+  const icon = document.getElementById('reload-icon');
+  flash.classList.remove('flash');
+  icon.classList.remove('spinning');
+  void flash.offsetWidth;
+  flash.classList.add('flash');
+  icon.classList.add('spinning');
+  setTimeout(() => icon.classList.remove('spinning'), 500);
+}
+
+// ── BUTTONS ──
+document.getElementById('btn-prev').addEventListener('click', () => goTo(current - 1));
+document.getElementById('btn-next').addEventListener('click', () => goTo(current + 1));
+document.getElementById('btn-reload').addEventListener('click', () => goTo(current, true));
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') goTo(current - 1);
+  if (e.key === 'ArrowRight') goTo(current + 1);
+  if (e.key === 'r' || e.key === 'R') goTo(current, true);
+});
+
+updateUI();
+</script>
+</body>
+</html>
