@@ -335,6 +335,50 @@
     pointer-events: none;
     z-index: 100;
   }
+
+  /* Tab group separator */
+  .tab-sep {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    flex-shrink: 0;
+    margin: 0 2px;
+  }
+
+  /* Special (non-stage) tab */
+  .tab.special { }
+  .tab.special:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+  .tab.special.active {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: #0d0d0d;
+  }
+
+  /* Image slot */
+  .img-slot {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    visibility: hidden;
+    pointer-events: none;
+    overflow: auto;
+  }
+  .img-slot.active {
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .img-slot img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
 </style>
 </head>
 <body>
@@ -395,42 +439,66 @@
 
 <script>
 const STAGES = [
+  { label: '프로세스 맵핑', file: 'process_mapping.png', type: 'image', special: true },
   { label: 'STAGE 1', file: 'stage1_full_v2.html' },
   { label: 'STAGE 2', file: 'stage2_game.html' },
   { label: 'STAGE 3', file: 'stage3_game.html' },
   { label: 'STAGE 4', file: 'stage4_game.html' },
   { label: 'STAGE 5', file: 'stage5_game.html' },
+  { label: '읽기 전 영상', file: 'https://www.youtube.com/embed/ksdHRuc0BNk', type: 'youtube', special: true },
+  { label: '읽기 후 활동', file: 'eco_fashion_guardian.html', special: true, scroll: true },
+  { label: '인사이트', file: 'ai_textbook_insights.html', special: true, scroll: true },
 ];
 
-let current = 0;
+let current = 1; // default: STAGE 1
 
 // ── BUILD TABS ──
 const tabsEl = document.getElementById('tabs');
 STAGES.forEach((s, i) => {
+  // separators between 프로세스맵핑|STAGE1 and STAGE5|읽기전영상
+  if (i === 1 || i === 6) {
+    const sep = document.createElement('div');
+    sep.className = 'tab-sep';
+    tabsEl.appendChild(sep);
+  }
   const btn = document.createElement('button');
-  btn.className = 'tab' + (i === 0 ? ' active' : '');
+  btn.className = 'tab' + (i === current ? ' active' : '') + (s.special ? ' special' : '');
   btn.innerHTML = `<span class="dot"></span>${s.label}`;
   btn.addEventListener('click', () => goTo(i));
   tabsEl.appendChild(btn);
 });
 
-// ── BUILD IFRAMES (lazy: src set on first visit) ──
+// ── BUILD SLOTS (iframe or image div) ──
 const frameWrap = document.getElementById('frame-wrap');
-const iframes = [];
+const slots = [];
 const loaded = [];
 
 STAGES.forEach((s, i) => {
-  const iframe = document.createElement('iframe');
-  iframe.className = 'iframe-slot' + (i === 0 ? ' active' : '');
-  iframe.setAttribute('scrolling', 'no');
-  frameWrap.appendChild(iframe);
-  iframes.push(iframe);
-  loaded.push(false);
+  let slot;
+  if (s.type === 'image') {
+    slot = document.createElement('div');
+    slot.className = 'img-slot' + (i === current ? ' active' : '');
+    const img = document.createElement('img');
+    img.src = s.file;
+    slot.appendChild(img);
+    loaded.push(true);
+  } else {
+    slot = document.createElement('iframe');
+    slot.className = 'iframe-slot' + (i === current ? ' active' : '');
+    if (!s.scroll) slot.setAttribute('scrolling', 'no');
+    if (s.type === 'youtube') {
+      slot.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+      slot.setAttribute('allowfullscreen', '');
+    }
+    loaded.push(false);
+  }
+  frameWrap.appendChild(slot);
+  slots.push(slot);
 });
 
-// load first stage immediately
-iframes[0].src = STAGES[0].file;
-loaded[0] = true;
+// load initial stage (STAGE 1)
+slots[current].src = STAGES[current].file;
+loaded[current] = true;
 
 // ── RESIZE: maintain 4:3 ratio ──
 function resize() {
@@ -445,7 +513,7 @@ function resize() {
   frameWrap.style.width = w + 'px';
   frameWrap.style.height = h + 'px';
 
-  iframes.forEach(f => {
+  slots.forEach(f => {
     f.style.width = w + 'px';
     f.style.height = h + 'px';
   });
@@ -455,30 +523,32 @@ resize();
 
 // ── NAVIGATION ──
 function goTo(idx, reload = false) {
+  if (idx < 0 || idx >= STAGES.length) return;
   if (idx === current && !reload) return;
 
   const overlay = document.getElementById('slide-overlay');
   overlay.classList.remove('transitioning');
-  void overlay.offsetWidth; // reflow
+  void overlay.offsetWidth;
   overlay.classList.add('transitioning');
 
   // hide old
-  iframes[current].classList.remove('active');
+  slots[current].classList.remove('active');
   document.querySelectorAll('.tab')[current].classList.remove('active');
 
   current = idx;
+  const s = STAGES[current];
 
   // load on first visit, or reload if requested
-  if (!loaded[current]) {
-    iframes[current].src = STAGES[current].file;
+  if (!loaded[current] && slots[current].tagName === 'IFRAME') {
+    slots[current].src = s.file;
     loaded[current] = true;
-  } else if (reload) {
+  } else if (reload && slots[current].tagName === 'IFRAME') {
     triggerReloadFlash();
-    iframes[current].src = STAGES[current].file;
+    slots[current].src = s.file;
   }
 
   // show new
-  iframes[current].classList.add('active');
+  slots[current].classList.add('active');
   document.querySelectorAll('.tab')[current].classList.add('active');
 
   updateUI();
@@ -486,6 +556,7 @@ function goTo(idx, reload = false) {
 
 function updateUI() {
   document.getElementById('cur').textContent = current + 1;
+  document.getElementById('tot').textContent = STAGES.length;
   document.getElementById('stage-name').textContent = STAGES[current].label;
   document.getElementById('status-file').textContent = STAGES[current].file;
   document.getElementById('btn-prev').disabled = current === 0;

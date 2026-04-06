@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Thread of Choice | Eco-Fashion Guardian</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans KR -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#EA580C',
+            'primary-dark': '#C2410C',
+            'primary-light': '#FED7AA',
+            ivory: '#F5F5F0',
+            dark: '#1A1A1A',
+          },
+          fontFamily: {
+            sans: ['"Noto Sans KR"', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body { font-family: 'Noto Sans KR', sans-serif; background-color: #F5F5F0; color: #1A1A1A; }
+
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn 0.4s ease-out; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+    .float-anim { animation: float 3s ease-in-out infinite; }
+
+    .stat-bar-inner { transition: width 0.6s ease-in-out; }
+
+    .option-btn {
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .option-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(234,88,12,0.18);
+    }
+    .option-btn:active { transform: translateY(-1px); }
+
+    .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+
+    /* Progress bar track */
+    .progress-track { background: #E5E7EB; border-radius: 9999px; height: 8px; }
+    .progress-fill  { height: 8px; border-radius: 9999px; background: linear-gradient(90deg,#EA580C,#F97316); transition: width 0.5s ease; }
+
+    /* History item */
+    .history-item { border-left: 4px solid #EA580C; }
+
+    /* Badge */
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<!-- ================================================================
+     INTRO SCREEN
+================================================================ -->
+<div id="screen-intro" class="screen active">
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+    <!-- Logo / Icon -->
+    <div class="float-anim mb-6">
+      <div class="w-28 h-28 rounded-full bg-primary flex items-center justify-center shadow-xl">
+        <i data-lucide="shirt" class="w-16 h-16 text-white"></i>
+      </div>
+    </div>
+
+    <!-- Badge -->
+    <span class="badge bg-primary-light text-primary mb-4">
+      <i data-lucide="leaf" class="w-3 h-3"></i> Eco-Fashion Guardian
+    </span>
+
+    <!-- Title -->
+    <h1 class="text-4xl md:text-5xl font-bold text-dark text-center leading-tight mb-3">
+      The Thread of Choice
+    </h1>
+    <p class="text-lg text-gray-500 font-medium mb-6">선택의 실</p>
+
+    <!-- Divider -->
+    <div class="w-16 h-1 bg-primary rounded-full mb-6"></div>
+
+    <!-- Description -->
+    <div class="max-w-lg text-center mb-8 space-y-2 text-gray-600 leading-relaxed">
+      <p>패션 산업은 지구 환경에 엄청난 영향을 미칩니다.</p>
+      <p>당신의 <strong class="text-primary">작은 선택들</strong>이 얼마나 큰 차이를 만드는지 직접 경험해 보세요.</p>
+      <p class="text-sm text-gray-400 pt-1">4개의 시나리오 · 실시간 환경 지표 · 비판적 성찰</p>
+    </div>
+
+    <!-- Start Button -->
+    <button onclick="goToReading()"
+      class="bg-primary hover:bg-primary-dark text-white font-bold py-4 px-10 rounded-2xl text-lg shadow-lg option-btn min-h-[52px]">
+      시작하기 →
+    </button>
+
+    <!-- Info chips -->
+    <div class="flex flex-wrap gap-3 justify-center mt-8 text-sm">
+      <span class="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full shadow-sm text-gray-600">
+        <i data-lucide="book-open" class="w-4 h-4 text-primary"></i> 배경 지문 읽기
+      </span>
+      <span class="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full shadow-sm text-gray-600">
+        <i data-lucide="mouse-pointer-click" class="w-4 h-4 text-primary"></i> 4가지 선택 시나리오
+      </span>
+      <span class="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full shadow-sm text-gray-600">
+        <i data-lucide="bar-chart-2" class="w-4 h-4 text-primary"></i> 환경 영향 리포트
+      </span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     READING SCREEN
+================================================================ -->
+<div id="screen-reading" class="screen">
+  <div class="max-w-4xl mx-auto px-4 py-10">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <span class="badge bg-primary-light text-primary mb-3">
+        <i data-lucide="book-open" class="w-3 h-3"></i> 배경 지식 확인
+      </span>
+      <h2 class="text-3xl font-bold text-dark">Background Reading</h2>
+      <p class="text-gray-500 mt-2">게임을 시작하기 전에 아래 내용을 읽어 보세요.</p>
+    </div>
+
+    <!-- Reading Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+
+      <!-- Card 1: Fast Fashion -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm card-hover">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="zap" class="w-5 h-5 text-primary"></i>
+          </div>
+          <div>
+            <p class="font-bold text-dark text-base">Fast Fashion</p>
+            <p class="text-xs text-gray-400 font-medium">패스트 패션이란?</p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-700 leading-relaxed">
+          The fashion industry is one of the world's biggest polluters.
+          <strong>Fast fashion</strong> encourages people to buy cheap, trendy clothes and throw them away quickly.
+          Every year, the fashion industry produces <strong>92 million tons</strong> of textile waste and uses enormous amounts of water and energy.
+        </p>
+      </div>
+
+      <!-- Card 2: Microplastics -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm card-hover">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="droplets" class="w-5 h-5 text-blue-500"></i>
+          </div>
+          <div>
+            <p class="font-bold text-dark text-base">Microplastics</p>
+            <p class="text-xs text-gray-400 font-medium">보이지 않는 오염</p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-700 leading-relaxed">
+          About 60% of clothing is made from <strong>synthetic fibers</strong> like polyester and nylon.
+          Every time we wash these clothes, thousands of tiny plastic particles — called <strong>microplastics</strong> — are released into waterways.
+          These particles harm marine life and eventually enter our food chain.
+        </p>
+      </div>
+
+      <!-- Card 3: Latin America / Global Impact -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm card-hover">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="globe" class="w-5 h-5 text-red-500"></i>
+          </div>
+          <div>
+            <p class="font-bold text-dark text-base">A Global Crisis</p>
+            <p class="text-xs text-gray-400 font-medium">세계로 퍼지는 문제</p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-700 leading-relaxed">
+          Chile's <strong>Atacama Desert</strong> has become a massive dump for discarded clothing shipped from around the world.
+          Developing countries in <strong>Latin America and Africa</strong> receive thousands of tons of unwanted clothes each year.
+          Many end up buried in landfills or burned, creating serious health and environmental crises.
+        </p>
+      </div>
+
+      <!-- Card 4: Solutions -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm card-hover">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="leaf" class="w-5 h-5 text-green-500"></i>
+          </div>
+          <div>
+            <p class="font-bold text-dark text-base">Sustainable Solutions</p>
+            <p class="text-xs text-gray-400 font-medium">우리가 할 수 있는 것</p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-700 leading-relaxed">
+          We can all make a difference: <strong>buy fewer</strong> but higher-quality clothes,
+          choose <strong>secondhand</strong> items, <strong>repair</strong> clothing instead of replacing it,
+          and <strong>recycle</strong> old textiles. By making smarter choices,
+          each of us can help reduce the fashion industry's impact on our planet.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center">
+      <p class="text-gray-400 text-sm mb-4">내용을 충분히 읽었다면 게임을 시작하세요.</p>
+      <button onclick="startGame()"
+        class="bg-primary hover:bg-primary-dark text-white font-bold py-4 px-10 rounded-2xl text-lg shadow-lg option-btn min-h-[52px]">
+        결정할 준비가 됐습니다 →
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     PLAYING SCREEN
+================================================================ -->
+<div id="screen-playing" class="screen">
+  <div class="max-w-5xl mx-auto px-4 py-8">
+
+    <!-- Top bar: progress -->
+    <div class="flex items-center justify-between mb-6">
+      <span class="text-sm font-medium text-gray-500" id="scenario-label">Scenario 1 of 4</span>
+      <span class="badge bg-primary-light text-primary">
+        <i data-lucide="target" class="w-3 h-3"></i> <span id="scenario-theme-badge">선택의 순간</span>
+      </span>
+    </div>
+    <!-- Progress Bar -->
+    <div class="progress-track mb-8">
+      <div class="progress-fill" id="progress-fill" style="width:25%"></div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+
+      <!-- LEFT: Scenario card -->
+      <div class="flex-1">
+        <div class="bg-white rounded-2xl shadow-sm p-6 md:p-8 mb-6">
+          <!-- Scenario icon + title -->
+          <div class="flex items-start gap-4 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <i id="scenario-icon" data-lucide="shopping-bag" class="w-6 h-6 text-primary"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-primary uppercase tracking-wider mb-0.5">Scenario</p>
+              <h2 id="scenario-title" class="text-xl md:text-2xl font-bold text-dark leading-snug"></h2>
+            </div>
+          </div>
+
+          <!-- Situation description -->
+          <div class="bg-orange-50 border border-orange-100 rounded-xl p-4 mb-6">
+            <p id="scenario-desc" class="text-sm md:text-base text-gray-700 leading-relaxed"></p>
+          </div>
+
+          <!-- Question -->
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">What will you do?</p>
+
+          <!-- Option Buttons -->
+          <div class="space-y-3" id="options-container">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Stats sidebar -->
+      <div class="lg:w-64 xl:w-72 flex-shrink-0">
+        <div class="bg-white rounded-2xl shadow-sm p-5 sticky top-6">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-1">
+            <i data-lucide="activity" class="w-3.5 h-3.5"></i> 실시간 환경 지표
+          </p>
+
+          <!-- Waste -->
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-sm font-medium text-gray-700 flex items-center gap-1">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5 text-red-400"></i> 폐기물
+              </span>
+              <span id="stat-waste-val" class="text-sm font-bold text-red-500">50</span>
+            </div>
+            <div class="progress-track">
+              <div id="stat-waste-bar" class="stat-bar-inner h-2 rounded-full bg-gradient-to-r from-orange-400 to-red-500" style="width:50%"></div>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">낮을수록 좋아요</p>
+          </div>
+
+          <!-- Pollution -->
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-sm font-medium text-gray-700 flex items-center gap-1">
+                <i data-lucide="cloud" class="w-3.5 h-3.5 text-yellow-500"></i> 환경 오염
+              </span>
+              <span id="stat-pollution-val" class="text-sm font-bold text-yellow-600">30</span>
+            </div>
+            <div class="progress-track">
+              <div id="stat-pollution-bar" class="stat-bar-inner h-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500" style="width:30%"></div>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">낮을수록 좋아요</p>
+          </div>
+
+          <!-- Sustainability -->
+          <div class="mb-2">
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-sm font-medium text-gray-700 flex items-center gap-1">
+                <i data-lucide="leaf" class="w-3.5 h-3.5 text-green-500"></i> 지속 가능성
+              </span>
+              <span id="stat-sustain-val" class="text-sm font-bold text-green-600">20</span>
+            </div>
+            <div class="progress-track">
+              <div id="stat-sustain-bar" class="stat-bar-inner h-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500" style="width:20%"></div>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">높을수록 좋아요</p>
+          </div>
+
+          <div class="border-t border-gray-100 pt-4 mt-4">
+            <p class="text-xs text-gray-400 text-center leading-relaxed">당신의 선택이<br/>지구를 바꿉니다.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     RESULT SCREEN
+================================================================ -->
+<div id="screen-result" class="screen">
+  <div class="max-w-3xl mx-auto px-4 py-10">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 rounded-full bg-primary flex items-center justify-center shadow-lg mx-auto mb-4">
+        <i data-lucide="clipboard-list" class="w-10 h-10 text-white"></i>
+      </div>
+      <h2 class="text-3xl font-bold text-dark">Your Impact Report</h2>
+      <p class="text-gray-500 mt-1">당신의 환경 영향 보고서</p>
+    </div>
+
+    <!-- Final stats card -->
+    <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+      <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-1">
+        <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i> 최종 환경 지표
+      </p>
+      <div class="grid grid-cols-3 gap-4 mb-5">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-red-500" id="result-waste">0</div>
+          <div class="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
+            <i data-lucide="trash-2" class="w-3 h-3"></i> 폐기물
+          </div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-yellow-500" id="result-pollution">0</div>
+          <div class="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
+            <i data-lucide="cloud" class="w-3 h-3"></i> 환경 오염
+          </div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-green-500" id="result-sustain">0</div>
+          <div class="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
+            <i data-lucide="leaf" class="w-3 h-3"></i> 지속 가능성
+          </div>
+        </div>
+      </div>
+      <!-- Verdict -->
+      <div id="result-verdict" class="rounded-xl p-4 text-center text-sm font-medium leading-relaxed"></div>
+    </div>
+
+    <!-- Reflection section -->
+    <div class="mb-8">
+      <h3 class="text-lg font-bold text-dark mb-4 flex items-center gap-2">
+        <i data-lucide="lightbulb" class="w-5 h-5 text-primary"></i>
+        비판적 성찰 (Critical Reflection)
+      </h3>
+      <div id="history-list" class="space-y-4">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Restart -->
+    <div class="text-center">
+      <button onclick="restartGame()"
+        class="bg-primary hover:bg-primary-dark text-white font-bold py-4 px-10 rounded-2xl text-lg shadow-lg option-btn min-h-[52px]">
+        <span class="flex items-center gap-2"><i data-lucide="refresh-cw" class="w-5 h-5"></i> 다시 시작하기</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================================================
+     JAVASCRIPT
+================================================================ -->
+<script>
+// ─────────────────────────────────────────────────────────────────
+// GAME DATA
+// ─────────────────────────────────────────────────────────────────
+const scenarios = [
+  {
+    id: 0,
+    icon: 'shopping-bag',
+    badge: '쇼핑의 순간',
+    title: 'Trending or Timeless?',
+    description:
+      "It's back-to-school season. Your friends are all wearing the latest trends. " +
+      "You walk past a fast fashion store full of cheap, trendy pieces — and right next door is a secondhand vintage shop. " +
+      "You have enough money for either. What do you choose?",
+    options: [
+      {
+        label: "Buy 5 trendy items at the fast fashion store",
+        emoji: "🛍️",
+        statChanges: { waste: +20, pollution: +15, sustainability: -15 },
+        feedback:
+          "빠른 결정이었지만... 패스트 패션은 매년 약 9,200만 톤의 섬유 폐기물을 만들어냅니다. 저렴하게 산 옷은 품질이 낮아 금방 버려지게 돼요. 그 옷이 어디로 가는지 생각해 본 적 있나요?",
+        reflection:
+          "만약 내가 산 옷이 단 몇 달 만에 버려진다면, 그것은 정말 '가성비'가 좋은 선택일까요?"
+      },
+      {
+        label: "Browse the secondhand shop and find a unique jacket",
+        emoji: "♻️",
+        statChanges: { waste: -10, pollution: -10, sustainability: +20 },
+        feedback:
+          "훌륭한 선택이에요! 중고 의류를 구매하면 새 옷 생산에 필요한 막대한 물과 에너지를 절약할 수 있습니다. 게다가 세상에 하나뿐인 개성 있는 스타일을 만들 수 있어요!",
+        reflection:
+          "중고 옷을 사는 것이 '세련되지 않다'는 생각은 어디서 왔을까요? 지금 그 생각이 조금이라도 바뀌었나요?"
+      }
+    ]
+  },
+  {
+    id: 1,
+    icon: 'scissors',
+    badge: '수선의 선택',
+    title: 'My Favorite Jeans',
+    description:
+      "Your favorite jeans have developed a small tear near the knee. Your friend says, " +
+      '"Just buy a new pair — those look old now." A new pair costs about $30 online. ' +
+      "But a local tailor can fix the tear for $5. What do you do?",
+    options: [
+      {
+        label: "Order a new pair online and throw the old ones out",
+        emoji: "🗑️",
+        statChanges: { waste: +15, pollution: +10, sustainability: -10 },
+        feedback:
+          "청바지 한 벌을 만들기 위해 약 7,500리터의 물이 필요해요. 이는 한 사람이 7년간 마시는 물의 양이에요. 한 번 더 생각해봤으면 좋았을 것 같아요.",
+        reflection:
+          "옷이 '유행이 지났다'고 버리는 것과 '못 입게 됐다'고 버리는 것, 어떤 차이가 있을까요?"
+      },
+      {
+        label: "Get them repaired — the worn look is actually stylish!",
+        emoji: "🧵",
+        statChanges: { waste: -5, pollution: -5, sustainability: +15 },
+        feedback:
+          "멋진 생각이에요! 수선하기와 DIY로 꾸미기는 옷의 수명을 늘리는 최고의 방법 중 하나예요. 게다가 수선된 옷은 세상에 하나뿐인 나만의 아이템이 됩니다!",
+        reflection:
+          "옷을 수선하거나 직접 꾸미는 것이 새 옷을 사는 것보다 더 창의적인 행동일 수 있을까요?"
+      }
+    ]
+  },
+  {
+    id: 2,
+    icon: 'video',
+    badge: 'SNS와 소비',
+    title: "The Influencer's Haul",
+    description:
+      "Your favorite social media influencer just posted a huge 'haul' video showing 20 new clothing items. " +
+      "They're sharing discount codes, and all your friends are buying something. " +
+      "You open your closet — it's already full. But the discount expires tonight. What do you do?",
+    options: [
+      {
+        label: "Use the code and buy 4 items you don't really need",
+        emoji: "📦",
+        statChanges: { waste: +20, pollution: +15, sustainability: -15 },
+        feedback:
+          "소셜 미디어의 '하울' 문화는 과소비를 자연스럽게 보이게 만들어요. 패션 산업은 전 세계 탄소 배출량의 약 10%를 차지합니다. 광고가 없었다면 그 선택을 했을까요?",
+        reflection:
+          "인플루언서의 '하울' 영상이 우리의 소비 습관에 어떤 영향을 미칠까요? 나는 얼마나 그 영향을 받고 있을까요?"
+      },
+      {
+        label: "Like the video, but decide your closet is already full",
+        emoji: "✋",
+        statChanges: { waste: -5, pollution: -10, sustainability: +20 },
+        feedback:
+          "훌륭한 자기 통제력이에요! '필요한가, 아니면 그냥 원하는가?'를 구분하는 것이 지속 가능한 소비의 첫걸음입니다. 당신의 결정이 지구에 작지만 의미 있는 차이를 만들었어요.",
+        reflection:
+          "광고나 SNS 없이 스스로 '필요한 것'을 결정할 수 있다면, 지금과 얼마나 다른 선택을 하게 될까요?"
+      }
+    ]
+  },
+  {
+    id: 3,
+    icon: 'archive',
+    badge: '옷장 정리',
+    title: 'Wardrobe Cleanout',
+    description:
+      "Your wardrobe is overflowing. You find 15 items you haven't worn in over a year — " +
+      "some still have tags on them. Your parents say it's time to clean up. " +
+      "You could bag everything for the trash, or take the time to sort it. What do you do?",
+    options: [
+      {
+        label: "Bag everything up and throw it all in the trash",
+        emoji: "🗑️",
+        statChanges: { waste: +20, pollution: +15, sustainability: -15 },
+        feedback:
+          "매년 전 세계에서 버려지는 옷은 9,200만 톤에 달해요. 매립지에 묻힌 합성 섬유 옷은 분해되는 데 수십 년이 걸립니다. 그리고 그 과정에서 메탄가스 같은 온실가스를 방출해요.",
+        reflection:
+          "내가 버린 옷들은 어디로 갈까요? '쓰레기통 너머'의 세상을 상상해본 적 있나요?"
+      },
+      {
+        label: "Sort them — donate wearable ones, recycle the rest",
+        emoji: "🎁",
+        statChanges: { waste: -15, pollution: -10, sustainability: +20 },
+        feedback:
+          "완벽한 선택이에요! 기부된 옷은 새로운 주인을 만나 다시 사용되고, 재활용된 섬유는 새 제품의 원료가 됩니다. 당신이 쓰레기통에 넣지 않은 것 하나하나가 의미 있는 변화예요.",
+        reflection:
+          "내 옷장에 '아직 멀쩡하지만 안 입는 옷'이 몇 벌이나 있을까요? 오늘 집에 가서 확인해 보고 싶다는 생각이 드나요?"
+      }
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────────────────────────
+// GAME STATE
+// ─────────────────────────────────────────────────────────────────
+let currentScenario = 0;
+let stats = { waste: 50, pollution: 30, sustainability: 20 };
+let history = [];
+
+// ─────────────────────────────────────────────────────────────────
+// SCREEN TRANSITIONS
+// ─────────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  // Re-create lucide icons in the newly shown screen
+  lucide.createIcons();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToReading() {
+  showScreen('screen-reading');
+}
+
+function startGame() {
+  currentScenario = 0;
+  stats = { waste: 50, pollution: 30, sustainability: 20 };
+  history = [];
+  showScreen('screen-playing');
+  renderScenario();
+  updateStatBars(false);
+}
+
+function restartGame() {
+  startGame();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SCENARIO RENDERING
+// ─────────────────────────────────────────────────────────────────
+function renderScenario() {
+  const sc = scenarios[currentScenario];
+  const total = scenarios.length;
+
+  // Label & progress
+  document.getElementById('scenario-label').textContent = `Scenario ${currentScenario + 1} of ${total}`;
+  document.getElementById('scenario-theme-badge').textContent = sc.badge;
+  document.getElementById('progress-fill').style.width = `${((currentScenario + 1) / total) * 100}%`;
+
+  // Icon (update data-lucide attribute then re-create)
+  const iconEl = document.getElementById('scenario-icon');
+  iconEl.setAttribute('data-lucide', sc.icon);
+
+  // Title & description
+  document.getElementById('scenario-title').textContent = sc.title;
+  document.getElementById('scenario-desc').textContent = sc.description;
+
+  // Options
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  sc.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className =
+      'option-btn w-full text-left bg-white border-2 border-gray-200 hover:border-primary rounded-xl p-4 min-h-[56px] flex items-center gap-3';
+    btn.innerHTML = `
+      <span class="text-2xl flex-shrink-0">${opt.emoji}</span>
+      <span class="font-medium text-gray-800 text-sm md:text-base leading-snug">${opt.label}</span>
+    `;
+    btn.onclick = () => makeChoice(i);
+    container.appendChild(btn);
+  });
+
+  lucide.createIcons();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// STAT BAR UPDATE
+// ─────────────────────────────────────────────────────────────────
+function updateStatBars(animate = true) {
+  const update = (barId, valId, value) => {
+    const bar = document.getElementById(barId);
+    const val = document.getElementById(valId);
+    if (!bar || !val) return;
+    if (!animate) bar.style.transition = 'none';
+    else bar.style.transition = 'width 0.6s ease-in-out';
+    bar.style.width = value + '%';
+    val.textContent = value;
+  };
+  update('stat-waste-bar',    'stat-waste-val',    stats.waste);
+  update('stat-pollution-bar','stat-pollution-val', stats.pollution);
+  update('stat-sustain-bar',  'stat-sustain-val',  stats.sustainability);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// MAKE CHOICE
+// ─────────────────────────────────────────────────────────────────
+function makeChoice(optionIndex) {
+  const sc  = scenarios[currentScenario];
+  const opt = sc.options[optionIndex];
+
+  // Apply stat changes (clamped 0-100)
+  const clamp = v => Math.max(0, Math.min(100, v));
+  stats.waste        = clamp(stats.waste        + opt.statChanges.waste);
+  stats.pollution    = clamp(stats.pollution    + opt.statChanges.pollution);
+  stats.sustainability = clamp(stats.sustainability + opt.statChanges.sustainability);
+
+  // Save to history
+  history.push({
+    scenarioTitle: sc.title,
+    scenarioBadge: sc.badge,
+    chosenLabel:   opt.label,
+    chosenEmoji:   opt.emoji,
+    feedback:      opt.feedback,
+    reflection:    opt.reflection,
+    statChanges:   opt.statChanges,
+  });
+
+  // Animate stat bars
+  updateStatBars(true);
+
+  // Advance or end
+  if (currentScenario < scenarios.length - 1) {
+    currentScenario++;
+    // Brief delay so bar animation is visible
+    setTimeout(() => {
+      renderScenario();
+    }, 300);
+  } else {
+    setTimeout(() => {
+      showResult();
+    }, 600);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SHOW RESULT
+// ─────────────────────────────────────────────────────────────────
+function showResult() {
+  showScreen('screen-result');
+
+  // Final stat numbers
+  document.getElementById('result-waste').textContent     = stats.waste;
+  document.getElementById('result-pollution').textContent = stats.pollution;
+  document.getElementById('result-sustain').textContent   = stats.sustainability;
+
+  // Verdict
+  const verdictEl = document.getElementById('result-verdict');
+  let verdictHtml = '';
+  if (stats.sustainability >= 60) {
+    verdictHtml = `<div class="text-green-700 bg-green-50 rounded-xl p-4">
+      🌿 <strong>훌륭한 선택이었어요!</strong><br/>
+      당신은 지속 가능한 패션 챔피언입니다. 오늘 배운 것을 실생활에서 실천해 보세요!
+    </div>`;
+    shootConfetti();
+  } else if (stats.sustainability >= 35) {
+    verdictHtml = `<div class="text-yellow-700 bg-yellow-50 rounded-xl p-4">
+      🌱 <strong>좋은 시작이에요!</strong><br/>
+      몇 가지 좋은 선택을 했지만, 아직 개선할 여지가 있어요. 다시 도전해 보세요!
+    </div>`;
+  } else {
+    verdictHtml = `<div class="text-red-700 bg-red-50 rounded-xl p-4">
+      💡 <strong>지금부터라도 바꿀 수 있어요!</strong><br/>
+      오늘 배운 내용을 기억하고, 다음번에는 더 나은 선택을 해 보세요. 작은 변화가 큰 차이를 만듭니다.
+    </div>`;
+  }
+  verdictEl.innerHTML = verdictHtml;
+
+  // History / reflection list
+  const listEl = document.getElementById('history-list');
+  listEl.innerHTML = '';
+  history.forEach((item, idx) => {
+    const isGood = item.statChanges.sustainability > 0;
+    const bgBadge = isGood ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600';
+    const choiceBadge = isGood ? '✅ 친환경 선택' : '⚠️ 재고해볼 선택';
+
+    const div = document.createElement('div');
+    div.className = 'history-item bg-white rounded-2xl p-5 shadow-sm';
+    div.innerHTML = `
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <div>
+          <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">Scenario ${idx + 1} · ${item.scenarioBadge}</p>
+          <p class="font-bold text-dark text-base">${item.scenarioTitle}</p>
+        </div>
+        <span class="badge ${bgBadge} flex-shrink-0 text-xs">${choiceBadge}</span>
+      </div>
+
+      <!-- Chosen option -->
+      <div class="flex items-center gap-2 bg-gray-50 rounded-xl px-4 py-2.5 mb-3 text-sm">
+        <span class="text-lg">${item.chosenEmoji}</span>
+        <span class="text-gray-700 font-medium">${item.chosenLabel}</span>
+      </div>
+
+      <!-- Feedback -->
+      <div class="mb-3">
+        <p class="text-xs font-bold text-primary uppercase tracking-wider mb-1 flex items-center gap-1">
+          <i data-lucide="message-circle" class="w-3 h-3"></i> 피드백
+        </p>
+        <p class="text-sm text-gray-600 leading-relaxed">${item.feedback}</p>
+      </div>
+
+      <!-- Reflection question -->
+      <div class="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3">
+        <p class="text-xs font-bold text-primary uppercase tracking-wider mb-1 flex items-center gap-1">
+          <i data-lucide="help-circle" class="w-3 h-3"></i> 더 깊이 생각해보기
+        </p>
+        <p class="text-sm text-primary-dark font-medium leading-relaxed">${item.reflection}</p>
+      </div>
+    `;
+    listEl.appendChild(div);
+  });
+
+  lucide.createIcons();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// CONFETTI
+// ─────────────────────────────────────────────────────────────────
+function shootConfetti() {
+  const end = Date.now() + 2200;
+  const colors = ['#EA580C', '#F97316', '#10B981', '#34D399', '#FCD34D'];
+
+  (function frame() {
+    confetti({
+      particleCount: 3,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 },
+      colors: colors,
+    });
+    confetti({
+      particleCount: 3,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 },
+      colors: colors,
+    });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────
+lucide.createIcons();
+</script>
+</body>
+</html>
