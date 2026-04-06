@@ -414,18 +414,23 @@ STAGES.forEach((s, i) => {
   tabsEl.appendChild(btn);
 });
 
-// ── BUILD IFRAMES (all loaded once, hidden/shown) ──
+// ── BUILD IFRAMES (lazy: src set on first visit) ──
 const frameWrap = document.getElementById('frame-wrap');
 const iframes = [];
+const loaded = [];
 
 STAGES.forEach((s, i) => {
   const iframe = document.createElement('iframe');
   iframe.className = 'iframe-slot' + (i === 0 ? ' active' : '');
-  iframe.src = s.file;
   iframe.setAttribute('scrolling', 'no');
   frameWrap.appendChild(iframe);
   iframes.push(iframe);
+  loaded.push(false);
 });
+
+// load first stage immediately
+iframes[0].src = STAGES[0].file;
+loaded[0] = true;
 
 // ── RESIZE: maintain 4:3 ratio ──
 function resize() {
@@ -463,8 +468,11 @@ function goTo(idx, reload = false) {
 
   current = idx;
 
-  // reload if requested
-  if (reload) {
+  // load on first visit, or reload if requested
+  if (!loaded[current]) {
+    iframes[current].src = STAGES[current].file;
+    loaded[current] = true;
+  } else if (reload) {
     triggerReloadFlash();
     iframes[current].src = STAGES[current].file;
   }

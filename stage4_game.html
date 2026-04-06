@@ -4,7 +4,7 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 .root{width:100%;font-family:var(--font-sans);background:#111;overflow:hidden;user-select:none;}
 .stage-label{background:#111;color:#7db87d;font-size:14px;font-weight:500;letter-spacing:.1em;text-align:center;padding:8px;text-transform:uppercase;}
-.scene{position:relative;width:100%;height:380px;overflow:hidden;}
+.scene{position:relative;width:100%;height:760px;overflow:hidden;}
 .bg-sky{position:absolute;inset:0;height:60%;background:#88b8d8;}
 .bg-ground{position:absolute;bottom:0;left:0;right:0;height:40%;background:#7a5830;}
 .bg-horizon{position:absolute;left:0;right:0;background:#926040;opacity:.6;bottom:38%;height:6px;}
@@ -53,7 +53,7 @@
 .m-dot{width:9px;height:9px;border-radius:50%;}
 .m-title{color:#aaa;font-size:14px;margin-left:5px;flex:1;text-align:center;letter-spacing:.03em;}
 .nb-inner{display:none;}.nb-inner.active{display:block;}
-.chat-area{background:#f7f8fa;height:300px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
+.chat-area{background:#f7f8fa;height:600px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
 .msg-row{display:flex;gap:8px;align-items:flex-start;}
 .msg-row.user{flex-direction:row-reverse;}
 .avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;}
@@ -70,7 +70,7 @@
 .tab-bar{display:flex;background:#1e1e30;border-bottom:2px solid #333;}
 .tab-btn{flex:1;padding:10px;font-size:16px;color:#aaa;background:none;border:none;cursor:pointer;font-family:var(--font-sans);transition:background .15s,color .15s;}
 .tab-btn.active{color:#7de87d;background:#0f1117;border-bottom:2px solid #7de87d;}
-.tab-content{display:none;background:#0f1117;height:320px;overflow-y:auto;padding:14px 16px;font-size:18px;line-height:1.85;color:#c8e0c8;}
+.tab-content{display:none;background:#0f1117;height:640px;overflow-y:auto;padding:14px 16px;font-size:18px;line-height:1.85;color:#c8e0c8;}
 .tab-content.active{display:block;}
 .tc-title{color:#7de87d;font-size:20px;font-weight:500;margin-bottom:10px;}
 .tc-q{color:#fff;font-weight:500;margin-bottom:6px;}
@@ -196,78 +196,15 @@
     <!-- NPC: 집필자 -->
     <div id="npc" style="position:absolute;bottom:68px;right:52px;">
 
-      <svg id="npcSvg" width="66" height="93" viewBox="0 0 160 220" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#1a1a1a" stroke-linejoin="round" stroke-linecap="round">
-          <ellipse cx="80" cy="50" rx="34" ry="34" fill="#1A1A2E" stroke-width="3.5"/>
-          <ellipse cx="80" cy="54" rx="28" ry="30" fill="#F0C080" stroke-width="3.5"/>
-          <path d="M52 42 Q50 24 70 20 Q80 18 90 20 Q108 24 108 42 Q100 28 88 30 Q80 28 72 30 Q62 32 58 38 Q54 34 52 42Z" fill="#1A1A2E" stroke-width="2.5"/>
-          <ellipse cx="52" cy="56" rx="6" ry="8" fill="#F0C080" stroke-width="3"/>
-          <ellipse cx="108" cy="56" rx="6" ry="8" fill="#F0C080" stroke-width="3"/>
-          <circle cx="69" cy="52" r="9" fill="none" stroke="#444488" stroke-width="2.5"/>
-          <circle cx="91" cy="52" r="9" fill="none" stroke="#444488" stroke-width="2.5"/>
-          <line x1="78" y1="52" x2="82" y2="52" stroke="#444488" stroke-width="2"/>
-          <line x1="52" y1="52" x2="60" y2="52" stroke="#444488" stroke-width="2"/>
-          <line x1="100" y1="52" x2="108" y2="52" stroke="#444488" stroke-width="2"/>
-          <path d="M62 42 Q68 39 75 41" fill="none" stroke="#1A1A2E" stroke-width="3"/>
-          <path d="M85 41 Q92 39 98 42" fill="none" stroke="#1A1A2E" stroke-width="3"/>
-          <circle cx="69" cy="53" r="4" fill="#2A1A0A"/>
-          <circle cx="91" cy="53" r="4" fill="#2A1A0A"/>
-          <circle cx="70.5" cy="51.5" r="1.2" fill="white"/>
-          <circle cx="92.5" cy="51.5" r="1.2" fill="white"/>
-          <path d="M77 61 Q80 66 83 61" fill="none" stroke="#C09050" stroke-width="2"/>
-          <path d="M71 71 Q80 74 89 71" fill="none" stroke="#B07040" stroke-width="2.5"/>
-          <ellipse cx="80" cy="74" rx="12" ry="5" fill="#D4A860" opacity="0.3"/>
-          <path d="M44 134 Q42 112 48 98 Q58 88 70 88 L80 94 L90 88 Q102 88 112 98 Q118 112 116 134Z" fill="#4A5060" stroke-width="3.5"/>
-          <path d="M66 90 L74 102 L86 102 L94 90 Q86 86 80 86 Q74 86 66 90Z" fill="#E8E8E8" stroke-width="2.5"/>
-          <path id="npcArmL" d="M44 134 Q36 150 38 170 Q40 176 46 176 Q52 176 54 170 Q54 150 52 134Z" fill="#4A5060" stroke-width="3.5"/>
-          <path id="npcArmR" d="M116 134 Q124 150 122 170 Q120 176 114 176 Q108 176 106 170 Q106 150 108 134Z" fill="#4A5060" stroke-width="3.5"/>
-          <ellipse id="npcHandL" cx="42" cy="179" rx="10" ry="8" fill="#F0C080" stroke-width="3"/>
-          <ellipse id="npcHandR" cx="118" cy="179" rx="10" ry="8" fill="#F0C080" stroke-width="3"/>
-          <rect x="16" y="162" width="30" height="36" rx="3" fill="#E07030" stroke-width="2.5"/>
-          <rect x="18" y="162" width="4" height="36" rx="2" fill="#C05010" stroke-width="0"/>
-          <line x1="24" y1="170" x2="42" y2="170" stroke="#C05010" stroke-width="1.5"/>
-          <line x1="24" y1="176" x2="42" y2="176" stroke="#C05010" stroke-width="1.5"/>
-          <line x1="24" y1="182" x2="42" y2="182" stroke="#C05010" stroke-width="1.5"/>
-          <path d="M54 134 L50 200 L70 200 L80 170 L90 200 L110 200 L106 134Z" fill="#1F3050" stroke-width="3.5"/>
-          <line x1="80" y1="150" x2="80" y2="170" stroke="#162238" stroke-width="2"/>
-          <ellipse cx="62" cy="203" rx="14" ry="6" fill="#2A1A0A" stroke-width="3"/>
-          <ellipse cx="98" cy="203" rx="14" ry="6" fill="#2A1A0A" stroke-width="3"/>
-        </g>
-      </svg>
+      <img src="NPC02_man01-cutout.png" style="height:400px;width:auto;display:block;" alt="집필자">
     </div>
   <div style="position:absolute;right:52px;bottom:52px;background:#4A5060;color:#fff;font-size:9px;font-weight:600;padding:2px 9px;border-radius:10px;border:2px solid #1a1a1a;white-space:nowrap;letter-spacing:.04em;font-family:var(--font-sans);z-index:30;pointer-events:none;">집필자</div>
 
-    <div class="bubble" id="bubble" style="right:124px;bottom:130px;"></div>
+    <div class="bubble" id="bubble" style="right:220px;bottom:350px;"></div>
 
     <!-- 플레이어 -->
     <div class="sprite" id="player" style="left:-80px;bottom:68px;">
-      <svg id="playerSvg" width="66" height="93" viewBox="0 0 160 220" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#1a1a1a" stroke-linejoin="round" stroke-linecap="round">
-          <ellipse cx="80" cy="52" rx="36" ry="38" fill="#3B2010" stroke-width="3.5"/>
-          <ellipse cx="80" cy="56" rx="30" ry="32" fill="#F5C89A" stroke-width="3.5"/>
-          <path d="M52 44 Q56 26 80 24 Q104 26 108 44 Q100 32 80 32 Q60 32 52 44Z" fill="#3B2010" stroke-width="2.5"/>
-          <ellipse cx="50" cy="58" rx="6" ry="8" fill="#F5C89A" stroke-width="3"/>
-          <ellipse cx="110" cy="58" rx="6" ry="8" fill="#F5C89A" stroke-width="3"/>
-          <ellipse cx="70" cy="52" rx="7" ry="7" fill="white" stroke-width="2.5"/>
-          <ellipse cx="90" cy="52" rx="7" ry="7" fill="white" stroke-width="2.5"/>
-          <circle cx="71" cy="53" r="4" fill="#3B2010"/>
-          <circle cx="91" cy="53" r="4" fill="#3B2010"/>
-          <circle cx="73" cy="51" r="1.5" fill="white"/>
-          <circle cx="93" cy="51" r="1.5" fill="white"/>
-          <path d="M70 70 Q80 76 90 70" fill="none" stroke="#C87060" stroke-width="2.5"/>
-          <polygon points="80,88 75,96 80,110 85,96" fill="#C0392B" stroke-width="2.5"/>
-          <path d="M46 130 Q44 110 50 96 Q60 88 70 88 L80 92 L90 88 Q100 88 110 96 Q116 110 114 130Z" fill="#E8E8E8" stroke-width="3.5"/>
-          <path d="M46 130 Q44 110 50 96 Q58 90 66 90 L72 100 L68 130Z" fill="#2C3E50" stroke-width="3"/>
-          <path d="M114 130 Q116 110 110 96 Q102 90 94 90 L88 100 L92 130Z" fill="#2C3E50" stroke-width="3"/>
-          <path id="plArmL" d="M46 130 Q40 145 42 165 Q44 170 50 170 Q56 170 58 165 Q58 145 56 130Z" fill="#2C3E50" stroke-width="3.5"/>
-          <path id="plArmR" d="M114 130 Q120 145 118 165 Q116 170 110 170 Q104 170 102 165 Q102 145 104 130Z" fill="#2C3E50" stroke-width="3.5"/>
-          <ellipse id="plHandL" cx="46" cy="173" rx="10" ry="8" fill="#F5C89A" stroke-width="3"/>
-          <ellipse id="plHandR" cx="114" cy="173" rx="10" ry="8" fill="#F5C89A" stroke-width="3"/>
-          <path d="M56 130 L60 195 L76 195 L80 165 L84 195 L100 195 L104 130Z" fill="#1F3050" stroke-width="3.5"/>
-          <ellipse id="footL" cx="66" cy="198" rx="14" ry="7" fill="#2A1A0A" stroke-width="3"/>
-          <ellipse id="footR" cx="94" cy="198" rx="14" ry="7" fill="#2A1A0A" stroke-width="3"/>
-        </g>
-      </svg>
+      <img src="Player_man02-cutout.png" style="height:400px;width:auto;display:block;" alt="편집자">
     </div>
 
     <div class="g-overlay" id="gOverlay">
@@ -310,7 +247,8 @@
         </div>
         <div class="nb-hint" id="nbHint">프롬프트가 자동으로 입력됩니다...</div>
       </div>
-      <div class="nb-inner" id="nbResult">
+      <div class="nb-inner" id="nbResult" style="position:relative;">
+        <button onclick="closeNBResult()" style="position:absolute;top:8px;right:10px;background:rgba(255,255,255,0.12);border:1px solid #555;color:#ccc;font-size:16px;cursor:pointer;border-radius:50%;width:32px;height:32px;line-height:1;z-index:10;" title="닫기">&#x2715;</button>
         <div class="tab-bar">
           <button class="tab-btn active" id="tab0" onclick="switchTab(0)">📝 읽기 문제</button>
           <button class="tab-btn" id="tab1" onclick="switchTab(1)">🎧 듣기 활동 문제</button>
@@ -330,15 +268,15 @@
         </div>
         <div class="tab-content" id="tc1">
           <div class="tc-title">듣기 활동 문제 (GPT · Gemini 생성)</div>
-          <div class="tc-script-q">What was the boy going to do with his hoodie?</div>
+          <div class="tc-script-q">문제: What was the boy going to do with his hoodie?</div>
           <div class="tc-choice-en">a. Give it to his uncle</div>
           <div class="tc-choice-en">b. Throw it away</div>
           <div class="tc-choice-en">c. Buy a new one</div>
-          <div class="tc-expl">Explanation: The boy says that he was going to throw the hoodie away because it had a hole in the sleeve.</div>
-          <div class="tc-ans">Answer: b</div>
+          <div class="tc-expl">설명: 소년은 후드티 소매에 구멍이 나 있어서 그것을 버리려고 했다고 말했다.</div>
+          <div class="tc-ans">정답: b</div>
           <div style="margin-top:14px;padding-top:10px;border-top:1px solid #2a4a2a;color:#88b888;font-size:11px;">
             ※ GPT, Gemini는 한국 스타일에 맞는 문제 생성 성공<br>
-            ※ Claude는 형식을 잘 맞추지 못함 — 휴먼 검토 필요
+            ※ Claude는 형식을 잘 맞추지 못함. 추가 예시, 생성 후 검토 필요
           </div>
         </div>
       </div>
@@ -402,19 +340,22 @@ let walkInterval=null,stepInterval=null,walkPhase=0;
 function getW(){return document.getElementById('scene').offsetWidth;}
 
 function resetChars(){
+  if(!document.getElementById("npcArmL")&&!document.getElementById("npcArmR"))return;
   document.getElementById('npcArmL').setAttribute('d','M44 134 Q36 150 38 170 Q40 176 46 176 Q52 176 54 170 Q54 150 52 134Z');
   document.getElementById('npcHandL').setAttribute('cx','42');document.getElementById('npcHandL').setAttribute('cy','179');
   document.getElementById('plArmL').setAttribute('d','M46 130 Q40 145 42 165 Q44 170 50 170 Q56 170 58 165 Q58 145 56 130Z');
   document.getElementById('plHandL').setAttribute('cx','46');document.getElementById('plHandL').setAttribute('cy','173');
-  document.getElementById('footL').setAttribute('cy','198');document.getElementById('footR').setAttribute('cy','198');
+  {const _fL=document.getElementById('footL'),_fR=document.getElementById('footR');if(_fL)_fL.setAttribute('cy','198');if(_fR)_fR.setAttribute('cy','198');}
 }
 
 function npcArm(up){
+  if(!document.getElementById("npcArmL")&&!document.getElementById("npcArmR"))return;
   const a=document.getElementById('npcArmL'),h=document.getElementById('npcHandL');
   if(up){a.setAttribute('d','M44 134 Q28 112 26 90 Q28 80 36 78 Q44 76 50 86 Q56 94 54 134Z');h.setAttribute('cx','28');h.setAttribute('cy','80');}
   else{a.setAttribute('d','M44 134 Q36 150 38 170 Q40 176 46 176 Q52 176 54 170 Q54 150 52 134Z');h.setAttribute('cx','42');h.setAttribute('cy','179');}
 }
 function plArm(up){
+  if(!document.getElementById("plArmL"))return;
   const a=document.getElementById('plArmL'),h=document.getElementById('plHandL');
   if(up){a.setAttribute('d','M46 130 Q30 110 28 88 Q30 80 38 78 Q46 76 52 84 Q58 92 56 130Z');h.setAttribute('cx','32');h.setAttribute('cy','80');}
   else{a.setAttribute('d','M46 130 Q40 145 42 165 Q44 170 50 170 Q56 170 58 165 Q58 145 56 130Z');h.setAttribute('cx','46');h.setAttribute('cy','173');}
@@ -430,14 +371,14 @@ function startWalk(tx,cb){
     if(Math.abs(diff)<3){
       player.style.left=tx+'px';
       clearInterval(walkInterval);clearInterval(stepInterval);walkInterval=null;stepInterval=null;
-      document.getElementById('footL').setAttribute('cy','198');document.getElementById('footR').setAttribute('cy','198');
+      {const _fL=document.getElementById('footL'),_fR=document.getElementById('footR');if(_fL)_fL.setAttribute('cy','198');if(_fR)_fR.setAttribute('cy','198');}
       if(cb)cb();return;
     }
     player.style.left=(cur+(diff>0?3:-3))+'px';
     walkPhase++;
-    document.getElementById('footL').setAttribute('cy',walkPhase%14<7?'193':'198');
-    document.getElementById('footR').setAttribute('cy',walkPhase%14<7?'198':'193');
-    const aL=document.getElementById('plArmL'),aR=document.getElementById('plArmR');
+    {const _footL=document.getElementById('footL');if(_footL)_footL.setAttribute('cy',walkPhase%14<7?'193':'198');}
+    {const _footR=document.getElementById('footR');if(_footR)_footR.setAttribute('cy',walkPhase%14<7?'198':'193');}
+    const aL=document.getElementById('plArmL'),aR=document.getElementById('plArmR');if(!aL||!aR)return;
     if(aL&&aR){
       if(walkPhase%14<7){aL.setAttribute('d','M46 130 Q38 148 40 162 Q42 168 48 168 Q54 168 56 162 Q58 148 54 130Z');aR.setAttribute('d','M114 130 Q122 142 120 158 Q118 168 112 168 Q106 168 104 162 Q102 148 106 130Z');}
       else{aL.setAttribute('d','M46 130 Q40 145 42 165 Q44 170 50 170 Q56 170 58 165 Q58 145 56 130Z');aR.setAttribute('d','M114 130 Q120 145 118 165 Q116 170 110 170 Q104 170 102 165 Q102 145 104 130Z');}
@@ -445,7 +386,7 @@ function startWalk(tx,cb){
   },18);
 }
 
-const dialogue="이제 지문이 다 만들어졌으니 다 됐죠? 아니, 이번에는 또 활동 문제를 만들라고요?";
+const dialogue="이제 지문이 다 만들어졌으니 다 됐죠? 아니, 이번에는 활동 문제를 만들라고요?";
 
 function showBubble(){
   npcArm(true);
@@ -460,7 +401,7 @@ function showOptions(){
   document.getElementById('popupTags').innerHTML='';
   document.getElementById('popupActions').innerHTML=`
     <button class="opt-btn opt-a" id="btnA"><span class="opt-label">A — AI 활용 (GPT · Gemini · Claude)</span>기존 교과서 활동 문제와 해설 파일을 주고 형식을 정해서 문제를 생성하게 한다.</button>
-    <button class="opt-btn opt-b" id="btnB"><span class="opt-label">B — 직접 집필</span>직접 집필한 예시 활동 문제를 집필자에게 조공하고 원고 집필을 요청한다.</button>
+    <button class="opt-btn opt-b" id="btnB"><span class="opt-label">B — 직접 집필</span>집필자에게 활동 문제 예시 자료를 정리하여 제공하고 원고 집필을 요청한다.</button>
   `;
   gOverlay.style.display='flex';
   document.getElementById('btnA').onclick=resultA;
@@ -513,7 +454,7 @@ document.getElementById('rNo').onclick=()=>{ synth&&synth.cancel(); window.locat
 
 function startGame(){
   setTimeout(()=>{
-    startWalk(getW()*0.38,()=>{
+    startWalk(150,()=>{
       setTimeout(()=>{plArm(true);setTimeout(()=>{plArm(false);showBubble();},700);},300);
     });
   },400);
@@ -526,7 +467,7 @@ function restartGame(){
   showScreen('scGame');startGame();
 }
 
-const prompt4="중학교 2학년 영어 교과서 평가 문제집의 본문, 해설 PDF 파일이야. 이 자료를 바탕으로 지문을 주면 그걸 가지고 읽기 문제와 듣기 활동 문제를 만들어 줘.";
+const prompt4="중학교 2학년 영어 교과서 평가 문제집의 본문, 해설 PDF 파일이야. 이 자료를 바탕으로 지문을 주면 그걸 가지고 읽기 문제와 듣기 활동 문제를 만들어줘.";
 let nbTyping=null;
 
 function openNB(){
@@ -536,7 +477,7 @@ function openNB(){
   document.getElementById('nbResult').classList.remove('active');
   const ca=document.getElementById('chatArea');
   ca.innerHTML='';
-  const greet='안녕하세요! PDF 파일을 분석할 준비가 되어 있습니다. 프롬프트를 입력해 주세요.';
+  const greet='안녕하세요! 프롬프트를 입력해 주세요.';
   const row=document.createElement('div');row.className='msg-row';
   row.innerHTML=`<div class="avatar ai">AI</div><div class="bmsg ai">${greet}</div>`;
   ca.appendChild(row);
@@ -572,18 +513,25 @@ function sendMsg(){
   ur.innerHTML=`<div class="avatar user">나</div><div class="bmsg user">${q}</div>`;
   ca.appendChild(ur);ca.scrollTop=ca.scrollHeight;
   document.getElementById('pInput').value='';
-  speak(q,1.0,()=>{
-    const tr=document.createElement('div');tr.className='msg-row';
-    tr.innerHTML=`<div class="avatar ai">AI</div><div class="bmsg ai"><div class="thinking"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
-    ca.appendChild(tr);ca.scrollTop=ca.scrollHeight;
-    setTimeout(()=>{
-      const doneMsg='읽기 문제와 듣기 활동 문제 생성이 완료되었습니다! 결과 화면으로 이동합니다.';
-      tr.querySelector('.bmsg').textContent=doneMsg;
-      ca.scrollTop=ca.scrollHeight;
-      document.getElementById('nbHint').textContent='생성 완료!';
-      speak(doneMsg,1.05,()=>setTimeout(showResult,400));
-    },1800);
-  });
+  // AI 생각 중 즉시 표시
+  const tr=document.createElement('div');tr.className='msg-row';
+  tr.innerHTML=`<div class="avatar ai">AI</div><div class="bmsg ai"><div class="thinking"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  ca.appendChild(tr);ca.scrollTop=ca.scrollHeight;
+  setTimeout(()=>{
+    const doneMsg='읽기 문제와 듣기 활동 문제 생성이 완료되었습니다! 아래 버튼을 눌러 결과를 확인하세요.';
+    tr.querySelector('.bmsg').textContent=doneMsg;
+    ca.scrollTop=ca.scrollHeight;
+    document.getElementById('nbHint').textContent='생성 완료!';
+    const btnRow=document.createElement('div');
+    btnRow.style.cssText='text-align:center;padding:20px 0 4px;';
+    btnRow.innerHTML=`<button onclick="showResult()" style="background:#f5c842;border:3px solid #1a1a1a;border-radius:10px;padding:14px 36px;font-size:20px;font-weight:500;cursor:pointer;font-family:var(--font-sans);">최종 결과 보기 →</button>`;
+    ca.appendChild(btnRow);ca.scrollTop=ca.scrollHeight;
+  },1800);
+}
+
+function closeNBResult(){
+  document.getElementById('nbResult').classList.remove('active');
+  document.getElementById('nbChat').classList.add('active');
 }
 
 function showResult(){
